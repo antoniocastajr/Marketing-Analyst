@@ -1,8 +1,7 @@
 # PROJECT: Marketing Analyst Agent
 # AUTHOR: Antonio Castañares Rodríguez
 
-# DESCRIPTION: This file implements a Marketing Analyst agent, which analyzes 
-# customer segments and provides insights and marketing implications.
+# DESCRIPTION: This file implements a multi-agent system for marketing analysis.
 
 # --------------------------------------IMPORTS--------------------------------------------
 import os
@@ -213,17 +212,27 @@ def DataOverview_node(state: State):
 
     # Load DataFrames 
     data_manager = state.get('data_manager')
-    leads_scored = data_manager.leads
+    leads = data_manager.leads
+    leads_scored = data_manager.leads_scored
     transactions = data_manager.transactions
     products = data_manager.products
 
     # Prepare dataset info and descriptions in JSON format for LLM
+    leads_info = get_dataset_info_json(leads)
     leads_scored_info = get_dataset_info_json(leads_scored)
     transactions_info = get_dataset_info_json(transactions)
     products_info = get_dataset_info_json(products)
+
+    leads_describe = leads.describe().to_json(orient='columns')
     leads_scored_describe = leads_scored.describe().to_json(orient='columns')
     transactions_describe = transactions.describe().to_json(orient='columns')
     products_describe = products.describe().to_json(orient='columns')
+
+    # Provide first five data samples for each table
+    leads_sample = leads.head().to_json(orient='records')
+    leads_scored_sample = leads_scored.head().to_json(orient='records')
+    transactions_sample = transactions.head().to_json(orient='records')
+    products_sample = products.head().to_json(orient='records')
 
     # Prepare and invoke LLM agent
     models = get_models(state.get('api_key'))
@@ -237,9 +246,15 @@ def DataOverview_node(state: State):
     # Invoke with all the data the prompt expects
     result = agent.invoke({
         'initial_question': last_question,
+        'leads_sample': leads_sample,
+        'leads_scored_sample': leads_scored_sample,
+        'transactions_sample': transactions_sample,
+        'products_sample': products_sample,
+        'leads_info': leads_info,
         'leads_scored_info': leads_scored_info,
         'transactions_info': transactions_info,
         'products_info': products_info,
+        'leads_describe': leads_describe,
         'leads_scored_describe': leads_scored_describe,
         'transactions_describe': transactions_describe,
         'products_describe': products_describe
@@ -287,7 +302,8 @@ def DataExplorer_node(state: State):
 
     # Load DataFrames
     data_manager = state.get('data_manager')
-    leads_scored = data_manager.leads
+    leads = data_manager.leads
+    leads_scored = data_manager.leads_scored
     transactions = data_manager.transactions
     products = data_manager.products
 
@@ -338,7 +354,8 @@ def EmailWriter_node(state: State):
     """
 
     data_manager = state.get('data_manager')
-    leads_scored = data_manager.leads
+    leads = data_manager.leads
+    leads_scored = data_manager.leads_scored
     transactions = data_manager.transactions
     products = data_manager.products
 
@@ -378,7 +395,7 @@ def BusinessAnalyst_node(state: State):
     """
 
     data_manager = state.get('data_manager')
-    leads_scored = data_manager.leads
+    leads_scored = data_manager.leads_scored
     transactions = data_manager.transactions
     products = data_manager.products
 
@@ -464,7 +481,7 @@ def MarketingAnalyst_node(state: State):
     agent = prompt_template | llm 
 
     try:
-        leads_scored = data_manager.leads
+        leads_scored = data_manager.leads_scored
         transactions = data_manager.transactions
         # Select only needed columns for analysis
         leads_scored = leads_scored[['user_email', 'p1', 'member_rating', 'customer_segment']]
