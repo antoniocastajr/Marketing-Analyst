@@ -246,7 +246,7 @@ def DataOverview_node(state: State):
     })
 
     # Load chart JSON for any relevant visualizations
-    relevant_plots = select_visualizations(last_question, state.get('model'))
+    relevant_plots = select_visualizations(last_question, state.get('model'), state.get('api_key'))
     
     chart_json = []
     if relevant_plots and relevant_plots.get('paths'):                                      # Check if dict exists AND paths is not empty   
@@ -312,7 +312,7 @@ def DataExplorer_node(state: State):
     })
 
     # Load chart JSON for relevant plots
-    relevant_plots = select_visualizations(last_question, state.get('model'))
+    relevant_plots = select_visualizations(last_question, state.get('model'), state.get('api_key'))
     
     chart_json = []
     if relevant_plots and relevant_plots.get('paths'):                                    # Check if dict exists AND paths is not empty 
@@ -431,7 +431,7 @@ def BusinessAnalyst_node(state: State):
     })
 
     # Load chart JSON for relevant plots
-    relevant_plots = select_visualizations(last_question, state.get('model'))
+    relevant_plots = select_visualizations(last_question, state.get('model'), state.get('api_key'))
     
     chart_json = []
     if relevant_plots and relevant_plots.get('paths'):
