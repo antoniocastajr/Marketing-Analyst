@@ -47,7 +47,35 @@ class PlotGenerator:
                  'title': 'Best Countries by Revenue',
                  'description': 'Bar chart showing the top countries by revenue.',
                  'path': 'plots/best_countries_by_revenue.json'
-             }
+             },{
+                'title': 'Best Countries by Number of Customers',
+                'description': 'Bar chart showing the top countries by number of customers.',
+                'path': 'plots/best_countries_by_customers.json'
+            },{
+                'title': 'Best Products by Number of Purchases',
+                'description': 'Bar chart highlighting the top-selling products in the dataset by number of purchases.',
+                'path': 'plots/best_products_by_purchases.json'
+             },{
+                'title': 'Best Users by Revenue',
+                'description': 'Bar chart highlighting the top users in the dataset by revenue.',
+                'path': 'plots/best_users_by_revenue.json'
+             },{
+                'title': 'Best Users by Number of Purchases',
+                'description': 'Bar chart highlighting the top users in the dataset by number of purchases.',
+                'path': 'plots/best_users_by_purchases.json'
+             },{
+                'title': 'Correlation Heatmap of Key Metrics',
+                'description': 'Heatmap showing the correlation between p1, purchase_frequency and average_order_value.',
+                'path': 'plots/correlation_heatmap.json'
+             },{
+                'title': 'Price vs. Purchase Count',
+                'description': 'Scatter plot showing the relationship between product price and number of purchases.',
+                'path': 'plots/price_vs_purchase_count.json'
+             },{
+                'title': 'Email Provider Distribution',
+                'description': 'Bar chart showing the top email providers by number of customers.',
+                'path': 'plots/email_provider_distribution.json'
+             } 
     ]
 
     def __new__(cls):
@@ -111,6 +139,18 @@ class PlotGenerator:
                 fig = self._best_selling_products_plot(dataManager)
             elif plot['title'] == "Best Countries by Revenue" and not self.check_plot_exist(plot['path']):
                 fig = self._best_countries_by_revenue_plot(dataManager)
+            elif plot['title'] == "Best Countries by Number of Customers" and not self.check_plot_exist(plot['path']):
+                fig = self._best_countries_by_customers_plot(dataManager)
+            elif plot['title'] == "Best Products by Number of Purchases" and not self.check_plot_exist(plot['path']):
+                fig = self._best_selling_products_plot(dataManager)
+            elif plot['title'] == "Best Users by Revenue" and not self.check_plot_exist(plot['path']):
+                fig = self._best_users_by_revenue_plot(dataManager)
+            elif plot['title'] == "Best Users by Number of Purchases" and not self.check_plot_exist(plot['path']):
+                fig = self._best_users_by_purchases_plot(dataManager)
+            elif plot['title'] == "Correlation Heatmap of Key Metrics" and not self.check_plot_exist(plot['path']):
+                fig = self._correlation_heatmap_plot(dataManager)
+            elif plot['title'] == "Email Provider Distribution" and not self.check_plot_exist(plot['path']):
+                fig = self._email_provider_plot(dataManager)
             else:
                 continue
             
@@ -126,7 +166,7 @@ class PlotGenerator:
         """Generate Customer Segment Analysis plot."""
     
         try:
-            leads_scored = dataManager.leads
+            leads_scored = dataManager.leads_scored
             transactions = dataManager.transactions
             # Select only needed columns for analysis
             leads_scored = leads_scored[['user_email', 'p1', 'member_rating', 'customer_segment']]
@@ -191,7 +231,7 @@ class PlotGenerator:
 
     def _segment_distribution_plot(self, dataManager):  
         """Generate Customer Segment Distribution plot."""
-        leads_scored = dataManager.leads
+        leads_scored = dataManager.leads_scored
 
         query = """
             SELECT 
@@ -224,7 +264,7 @@ class PlotGenerator:
 
     def _revenue_by_segment_plot(self, dataManager):
         """Generate Revenue by Customer Segment plot."""
-        leads_scored = dataManager.leads
+        leads_scored = dataManager.leads_scored
         transactions = dataManager.transactions
         products = dataManager.products
 
@@ -298,7 +338,7 @@ class PlotGenerator:
 
     def _best_countries_by_revenue_plot(self, dataManager):
         """Generate Best Countries by Revenue plot."""
-        leads = dataManager.leads
+        leads = dataManager.leads_scored
         transactions = dataManager.transactions
         products = dataManager.products
 
@@ -334,13 +374,276 @@ class PlotGenerator:
         )
         
         return fig
+    
+    def _best_countries_by_customers_plot(self, dataManager):
+        """Generate Best Countries by number of customers plot."""
+        transactions = dataManager.transactions
+
+        query = """
+            SELECT 
+                t.charge_country AS country,
+                COUNT(DISTINCT t.user_email) AS customer_count
+            FROM transactions t
+            GROUP BY t.charge_country
+            ORDER BY customer_count DESC
+            LIMIT 5
+        """
+
+        result = duckdb.query(query).to_df()
+        result['customer_count'] = result['customer_count'].round(2)
+
+        fig = px.bar(
+            result,
+            x='country',
+            y='customer_count',
+            title='Top 5 Countries by Number of Customers',
+            labels={'country': 'Country', 'customer_count': 'Number of Customers'},
+            color='country',
+            text='customer_count',
+            color_discrete_sequence=['#FF6B6B', '#4ECDC4', '#45B7D1', '#FFA07A', '#98D8C8'],
+        )
+
+        # Format text on bars
+        fig.update_traces(texttemplate='%{text:,.0f}', textposition='outside')
+
+        return fig
+    
+    def _best_selling_products_plot(self, dataManager):
+        """Generate Best Selling Products by number of purchases plot."""
+        transactions = dataManager.transactions
+        products = dataManager.products
+
+        query = """
+            SELECT 
+                p.product_id,
+                p.description AS product_description,
+                COUNT(t.transaction_id) AS purchase_count
+            FROM transactions t
+            INNER JOIN products p ON t.product_id = p.product_id
+            GROUP BY p.product_id, p.description
+            ORDER BY purchase_count DESC
+            LIMIT 5
+        """
+
+        result = duckdb.query(query).to_df()
+        result['product_id'] = result['product_id'].map(lambda x: f'Product {int(x)}')
+        result['purchase_count'] = result['purchase_count'].round(2)
+
+        fig = px.bar(
+            result,
+            x='product_id',
+            y='purchase_count',
+            title='Top 5 Best Selling Products by Number of Purchases',
+            labels={'product_id': 'Product', 'purchase_count': 'Number of Purchases', 'product_description': 'Description'},
+            text='purchase_count',
+            color='product_id',
+            color_discrete_sequence=['#FF6B6B', '#4ECDC4', '#45B7D1', '#FFA07A', '#98D8C8'],
+            hover_data=['product_description']
+        )
+
+        # Format text on bars
+        fig.update_traces(texttemplate='%{text:,.0f}', textposition='outside')
+
+        return fig
+
+    def _best_users_by_revenue_plot(self, dataManager):
+        """Generate Best Users by Revenue plot."""
+        leads = dataManager.leads
+        leads_scored = dataManager.leads_scored
+        transactions = dataManager.transactions
+        products = dataManager.products
+
+        query = """
+            SELECT 
+                l.user_email AS user_name,
+                SUM(p.suggested_price) AS total_revenue
+            FROM leads_scored l
+            LEFT JOIN transactions t ON l.user_email = t.user_email
+            LEFT JOIN products p ON t.product_id = p.product_id
+            GROUP BY l.user_email
+            ORDER BY total_revenue DESC
+            LIMIT 5
+        """
+
+        result = duckdb.query(query).to_df()
+        result['total_revenue'] = result['total_revenue'].round(2)
+         
+        fig = px.bar(
+            result,
+            x='user_name',
+            y='total_revenue',
+            title='Top 5 Best Users by Revenue',
+            labels={'user_name': 'User Name', 'total_revenue': 'Total Revenue ($)'},
+            color='user_name',
+            text='total_revenue'
+        )
+        
+        # Format text on bars to show currency
+        fig.update_traces(texttemplate='$%{text:,.0f}', textposition='outside')
+        
+        return fig
+    
+    def _best_users_by_purchases_plot(self, dataManager):
+        """Generate Best Users by Number of Purchases plot."""
+        leads = dataManager.leads
+        leads_scored = dataManager.leads_scored
+        transactions = dataManager.transactions
+        products = dataManager.products
+
+        query = """
+            SELECT 
+                l.user_email,
+                COUNT(t.transaction_id) AS purchase_count
+            FROM leads_scored l
+            LEFT JOIN transactions t ON l.user_email = t.user_email
+            LEFT JOIN products p ON t.product_id = p.product_id
+            GROUP BY l.user_email
+            ORDER BY purchase_count DESC
+            LIMIT 5
+        """
+
+        result = duckdb.query(query).to_df()
+        result['purchase_count'] = result['purchase_count'].round(2)
+         
+        fig = px.bar(
+            result,
+            x='user_email',
+            y='purchase_count',
+            title='Top 5 Best Users by Number of Purchases',
+            labels={'user_email': 'User Email', 'purchase_count': 'Number of Purchases'},
+            color='user_email',
+            text='purchase_count'
+        )
+        
+        # Format text on bars
+        fig.update_traces(texttemplate='%{text:,.0f}', textposition='outside')
+        
+        return fig
+    
+    def _correlation_heatmap_plot(self, dataManager):
+        """Generate Correlation Heatmap plot."""
+        leads_scored = dataManager.leads_scored
+
+        query = """
+            SELECT
+                l.p1,
+                l.member_rating,
+                l.purchase_frequency
+            FROM leads_scored l
+        """
+
+        df_analysis = duckdb.query(query).to_df() 
+        corr_matrix = df_analysis.corr()
+
+        fig = px.imshow(
+            corr_matrix,
+            text_auto=True,
+            title='Correlation Heatmap of Key Metrics',
+            x=df_analysis.columns,
+            y=df_analysis.columns,
+            color_continuous_scale='RdBu_r',
+            zmin=-1,
+            zmax=1
+        )
+
+        return fig
+    
+    def _price_vs_purchase_count_plot(self, dataManager):
+        """Generate Price vs. Purchase Count plot."""
+        transactions = dataManager.transactions
+        products = dataManager.products
+
+        query = """
+            SELECT 
+                p.suggested_price,
+                COUNT(t.transaction_id) AS purchase_count
+            FROM transactions t
+            INNER JOIN products p ON t.product_id = p.product_id
+            GROUP BY p.suggested_price
+        """
+
+        result = duckdb.query(query).to_df()
+
+        fig = px.scatter(
+            result,
+            x='suggested_price',
+            y='purchase_count',
+            title='Price vs. Purchase Count',
+            labels={'suggested_price': 'Suggested Price ($)', 'purchase_count': 'Number of Purchases'},
+            trendline='ols',
+            color_discrete_sequence=['#FF6B6B']
+        )
+
+        return fig
+    
+    def _email_provider_plot(self, dataManager):
+        """Generate Email Provider Distribution plot."""
+        leads = dataManager.leads
+
+        query = """
+            SELECT 
+                email_provider,
+                COUNT(*) AS customer_count
+            FROM leads
+            GROUP BY email_provider
+            ORDER BY customer_count DESC
+            LIMIT 5
+        """
+
+        result = duckdb.query(query).to_df()
+        fig = px.bar(
+            result,
+            x='email_provider',
+            y='customer_count',
+            title='Top 5 Email Providers by Number of Customers',
+            labels={'email_provider': 'Email Provider', 'customer_count': 'Number of Customers'},
+            color='email_provider',
+            text='customer_count',
+            color_discrete_sequence=['#FF6B6B', '#4ECDC4', '#45B7D1', '#FFA07A', '#98D8C8'],
+        )
+
+        # Format text on bars
+        fig.update_traces(texttemplate='%{text:,.0f}', textposition='outside')
+
+        return fig
+    
+    def _member_rating_distribution_plot(self, dataManager):
+        """Generate Member Rating Distribution plot."""
+        leads_scored = dataManager.leads_scored
+
+        query = """
+            SELECT 
+                member_rating,
+                COUNT(*) AS customer_count
+            FROM leads_scored
+            GROUP BY member_rating
+            ORDER BY member_rating
+        """
+
+        result = duckdb.query(query).to_df()
+        fig = px.bar(
+            result,
+            x='member_rating',
+            y='customer_count',
+            title='Member Rating Distribution',
+            labels={'member_rating': 'Member Rating', 'customer_count': 'Number of Customers'},
+            color='member_rating',
+            text='customer_count',
+            color_continuous_scale=px.colors.sequential.Viridis
+        )
+
+        # Format text on bars
+        fig.update_traces(texttemplate='%{text:,.0f}', textposition='outside')
+
+        return fig
+    
 
 if __name__ == "__main__":
     plot_generator = PlotGenerator()
     from data_manager import DataManager
     data_manager = DataManager()
     data_manager.load_data()
-    plot_generator._generate_plots(data_manager)
+    plot_generator.generate_plots(data_manager)
     #plot_generator._segment_analysis_plot(data_manager)
     #plot_generator._segment_distribution_plot(data_manager)
     #plot_generator._revenue_by_segment_plot(data_manager)
