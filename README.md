@@ -20,7 +20,16 @@ In detail, this multi-agent AI system implements the following specialized agent
   - 📧 Email Marketing: Identifies target customers and creates personalized email campaigns.
   - 📣 Marketing Strategy: Segments customers into clusters and generates targeted marketing strategies for each group.
 
-<img width="1293" height="858" alt="image" src="https://github.com/user-attachments/assets/d9322651-8dfa-4e79-a5bc-3282513152a9" />
+<p align="center">
+  <video
+    src="https://github.com/antoniocastajr/Marketing-Analyst/issues/1#issue-3551563149"
+    controls
+    muted
+    playsinline
+    loop
+    width="720">
+  </video>
+</p>
 
 #
 ✍️ Author: Antonio Castañares Rodríguez
