@@ -35,6 +35,6 @@ In detail, this multi-agent AI system implements the following specialized agent
 #
 ✍️ Author: Antonio Castañares Rodríguez
 
-📌 This repository documents a key project in my AI learning path, focused on gaining a deep, practical understanding of agentic systems by building one from its core components.
+📌 This repository documents a key project in my AI learning path, focused on gaining a deep and practical understanding of agentic systems to solve business problems.
 
 [demo]: https://marketing-analyst.streamlit.app/ 
