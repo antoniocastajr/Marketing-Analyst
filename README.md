@@ -22,12 +22,13 @@ In detail, this multi-agent AI system implements the following specialized agent
 
 <p align="center">
   <video
-    src="https://github.com/antoniocastajr/Marketing-Analyst/issues/1#issue-3551563149"
+    src="https://github.com/user-attachments/assets/60fcc44f-3ac5-4367-8383-5b436f806943"
     controls
     muted
     playsinline
     loop
-    width="720">
+    width="720" 
+    height="405">
   </video>
 </p>
 
