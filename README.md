@@ -27,7 +27,7 @@ In detail, this multi-agent AI system implements the following specialized agent
     muted
     playsinline
     loop
-    width="600" 
+    width="720" 
     height="405">
   </video>
 </p>
