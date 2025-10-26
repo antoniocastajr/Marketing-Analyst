@@ -66,7 +66,7 @@ As I mentioned previously, this project implements six distinct AI agents, each 
 ---
 ### 🔑 APIs required
 
-- 🧠 **OPENAI:** Runs the LLMs. (I allocated $5 for this project; current spend ~$0.64.) Create an API key at [OpenAI][openai_api].  
+- 🧠 **OPENAI:** Runs the LLMs. (I allocated $5 for this project; current spend ~$0.78.) Create an API key at [OpenAI][openai_api].  
   Models in this project were selected for a good price/performance balance (prices as of **09/08/2025**):
   - **[gpt-5-nano][gpt5nano]** — Input/Output price: $0.05 / $0.40
   - **[gpt-4.1-nano][gpt41nano]** — Input/Output price: $0.10 / $0.40
