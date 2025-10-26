@@ -154,3 +154,8 @@ The project is organized into several key files, each with a specific objective:
 📌 This repository documents a key project in my AI learning path, focused on gaining a deep and practical understanding of agentic systems to solve business problems.
 
 [demo]: https://marketing-analyst.streamlit.app/ 
+[uv]: https://docs.astral.sh/uv/
+[openai_api]: https://platform.openai.com/api-keys
+[gpt5nano]: https://platform.openai.com/docs/models/gpt-5-nano
+[gpt41nano]: https://platform.openai.com/docs/models/gpt-4.1-nano
+[gpt4omini]: https://platform.openai.com/docs/models/gpt-4o-mini
