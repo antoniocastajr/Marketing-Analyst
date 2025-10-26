@@ -15,10 +15,12 @@ This project was deployed in this [website][demo]. It demonstrates the **capabil
 In detail, this multi-agent AI system implements the following specialized agents:
 
   - 📋 **Data Overview:** Provides **an introduction to the database** used in this project. Displays column names, data types, brief descriptions of each table, and visualizations to complement the analysis.
-  - 🔍 **Data Exploration:** It a **SQL generator that translates natural language into database queries **and interprets insights automatically.
+  - 🔍 **Data Exploration:** It a **SQL generator that translates natural language into database queries** and interprets insights automatically.
   - 💼 **Business Analysis:** Produces a **business report based on key metrics** such as revenue, average order value, and customer lifetime value (CLV).
   - 📧 **Email Marketing:** Identifies target customers and **creates personalized email campaigns.**
   - 📣 **Marketing Strategy:** Segments customers into clusters and **generates targeted marketing strategies for each group.**
+
+The following demo shows the performance of the following agents; Data Exploration, Email Marketing, and Marketing Strategy.
 
 <p align="center">
   <video
@@ -38,7 +40,7 @@ In detail, this multi-agent AI system implements the following specialized agent
 
 The architecture of this project is based on **SQLite3, LangGraph, and Streamlit.** Data is stored in a relational SQLite3 database, and DuckDB is used to execute analytical queries on the database. LangGraph manages the workflow by representing it as a graph, allowing each agent to be activated or used based on the current state. The state stores relevant information for each agent, such as chat history, user inputs, boolean flags, and more. Streamlit is used to deploy interactive demos with minimal implementation overhead.
 
-As I mentioned previously, this project implements six distinct AI agents, each described below:
+In detail, this project implements six distinct AI agents, each described below:
 
 <p align="center">
 <img width="600" height="400" alt="Marketing" src="https://github.com/user-attachments/assets/11838a7b-bdeb-4368-bcf2-043ce4031df8" />
@@ -77,7 +79,7 @@ As I mentioned previously, this project implements six distinct AI agents, each 
 
 **Remember that you can use the project in this [website][demo].** However, if you can run this project on local, you must follow the next steps.
 
-Firstly, I highly recommend using **['uv'][uv]** as your Python package & project manager. It installs packages and creates virtual environments **much faster** than traditional `pip` workflows. 
+I highly recommend using **['uv'][uv]** as your Python package & project manager. It installs packages and creates virtual environments **much faster** than traditional `pip` workflows. 
 
 **1. Clone the Repository:** Clone the project repository to your local machine and navigate into the directory.
 ```bash
