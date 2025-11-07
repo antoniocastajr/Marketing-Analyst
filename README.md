@@ -43,7 +43,7 @@ The architecture of this project is based on **SQLite3, LangGraph, and Streamlit
 In detail, this project implements six distinct AI agents, each described below:
 
 <p align="center">
-<img width="600" height="400" alt="Marketing" src="https://github.com/user-attachments/assets/11838a7b-bdeb-4368-bcf2-043ce4031df8" />
+<img width="784" height="277" alt="marketing_graph" src="https://github.com/user-attachments/assets/8d36d7e6-8fd9-471f-b3c9-841a0e197030" />
 </p>
 
 - 🔀 **Router**: Commonly named as 'Supervisor'. When a user interacts with the app, the router examines the current state (including user input, chat history, and flags) and **determines which agent should handle the next step.**
